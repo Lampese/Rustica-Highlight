@@ -1,0 +1,672 @@
+==================
+Draft.mor test
+==================
+enum Color{
+    Red
+    Green
+    Blue
+    RGB(Int, Int, Int)
+    Hex(Int)
+}
+
+fn to_rbg(color: Color) -> Color {
+    match color {
+        Blue => Hex(255)
+        Green => Hex(65280)
+        Red => Hex(16711680)
+        RGB(r, g, b) => Hex(lsl(r, 16) + lsl(g, 8) + lsl(b, 0))
+        Hex(hex) => Hex(hex)
+    }
+}
+
+enum Fun{
+    One((Int -> Int))
+    Two(((Int, Int) -> Int)) 
+}
+
+enum Option[T]{
+    Some(T)
+    Nothing
+}
+
+effect Exception[T]{
+    raise(String) -> T
+}
+
+effect KVStore[K, V]{
+    get(K) -> Option[V]
+    put(K, V) -> Unit
+}
+
+fn implement[K, V, T](map: Map[K, V]) -> ((<KVStore[K, V]> T) ~> T) {
+    hn {
+        get(key) => handle { resume(Map::get(map, key)) } with implement(map)
+        put(key, value) => {
+            let updated_map = Map::insert(map, key, value)
+            handle { resume() } with implement(updated_map)
+        }
+    }
+}
+
+fn in_memory[K, V, T, G](key_value_interactions: ((Unit) -> <KVStore[K, V], G> T)) -> <G> T {
+    handle { key_value_interactions() } with implement(Map::empty())
+}
+
+fn prog() -> <KVStore[Nat, Nat]> Text {
+    KVStore::put(3, 4)
+    KVStore::put(5, 6)
+    let maybe_four = KVStore::get(3)
+    Optional::map(Nat::toText(maybe_four)) |> Optional::getOrElse("nothing here")
+}
+
+fn main() -> <IO> Unit {
+    in_memory(prog) |> IO::println
+}
+
+fn pow(x: Int, y: Int) -> Int {
+    let mut result = x
+    let mut counter = 1
+    let never_catch = false
+    while counter <= y {
+        result = result * x
+        if never_catch {
+            break
+        }
+    }
+    if never_catch {
+        return
+    }
+    return result
+}
+
+---
+
+(program 
+  (enum_declaration 
+    name: (identifier_upper )
+    fields: (enum_field 
+      name: (identifier_upper ))
+    fields: (enum_field 
+      name: (identifier_upper ))
+    fields: (enum_field 
+      name: (identifier_upper ))
+    fields: (enum_field 
+      name: (identifier_upper )
+      types: (type_list 
+        (simple_type 
+          name: (identifier_upper ))
+        (simple_type 
+          name: (identifier_upper ))
+        (simple_type 
+          name: (identifier_upper ))))
+    fields: (enum_field 
+      name: (identifier_upper )
+      types: (type_list 
+        (simple_type 
+          name: (identifier_upper )))))
+  (newline )
+  (function_declaration 
+    name: (identifier_lower )
+    parameters: (function_parameters 
+      (function_parameter 
+        name: (identifier_lower )
+        type: (simple_type 
+          name: (identifier_upper ))))
+    return_type: (type_annotation 
+      (simple_type 
+        name: (identifier_upper )))
+    body: (statement_block 
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (match_expression 
+              value: (expression 
+                (variable 
+                  name: (identifier_lower )))
+              cases: (match_case 
+                pattern: (match_pattern 
+                  (identifier_upper ))
+                body: (expression 
+                  (constructor_call 
+                    constructor: (identifier_upper )
+                    arguments: (expression_list 
+                      (expression 
+                        (literal 
+                          (number )))))))
+              cases: (match_case 
+                pattern: (match_pattern 
+                  (identifier_upper ))
+                body: (expression 
+                  (constructor_call 
+                    constructor: (identifier_upper )
+                    arguments: (expression_list 
+                      (expression 
+                        (literal 
+                          (number )))))))
+              cases: (match_case 
+                pattern: (match_pattern 
+                  (identifier_upper ))
+                body: (expression 
+                  (constructor_call 
+                    constructor: (identifier_upper )
+                    arguments: (expression_list 
+                      (expression 
+                        (literal 
+                          (number )))))))
+              cases: (match_case 
+                pattern: (match_pattern 
+                  (constructor_pattern 
+                    constructor: (identifier_upper )
+                    arguments: (tuple_pattern 
+                      (pattern_element 
+                        (identifier_lower ))
+                      (pattern_element 
+                        (identifier_lower ))
+                      (pattern_element 
+                        (identifier_lower )))))
+                body: (expression 
+                  (constructor_call 
+                    constructor: (identifier_upper )
+                    arguments: (expression_list 
+                      (expression 
+                        (binary_expression 
+                          left: (expression 
+                            (binary_expression 
+                              left: (expression 
+                                (function_call 
+                                  function: (identifier_lower )
+                                  arguments: (expression_list 
+                                    (expression 
+                                      (variable 
+                                        name: (identifier_lower )))
+                                    (expression 
+                                      (literal 
+                                        (number ))))))
+                              right: (expression 
+                                (function_call 
+                                  function: (identifier_lower )
+                                  arguments: (expression_list 
+                                    (expression 
+                                      (variable 
+                                        name: (identifier_lower )))
+                                    (expression 
+                                      (literal 
+                                        (number ))))))))
+                          right: (expression 
+                            (function_call 
+                              function: (identifier_lower )
+                              arguments: (expression_list 
+                                (expression 
+                                  (variable 
+                                    name: (identifier_lower )))
+                                (expression 
+                                  (literal 
+                                    (number ))))))))))))
+              cases: (match_case 
+                pattern: (match_pattern 
+                  (constructor_pattern 
+                    constructor: (identifier_upper )
+                    arguments: (tuple_pattern 
+                      (pattern_element 
+                        (identifier_lower )))))
+                body: (expression 
+                  (constructor_call 
+                    constructor: (identifier_upper )
+                    arguments: (expression_list 
+                      (expression 
+                        (variable 
+                          name: (identifier_lower )))))))))))))
+  (newline )
+  (enum_declaration 
+    name: (identifier_upper )
+    fields: (enum_field 
+      name: (identifier_upper )
+      types: (type_list 
+        (function_type 
+          parameter: (simple_type 
+            name: (identifier_upper ))
+          return_type: (simple_type 
+            name: (identifier_upper )))))
+    fields: (enum_field 
+      name: (identifier_upper )
+      types: (type_list 
+        (parenthesized_type 
+          (function_type 
+            parameters: (type_list 
+              (simple_type 
+                name: (identifier_upper ))
+              (simple_type 
+                name: (identifier_upper )))
+            return_type: (simple_type 
+              name: (identifier_upper )))))))
+  (newline )
+  (enum_declaration 
+    name: (identifier_upper )
+    type_parameters: (type_parameters 
+      (type_parameter 
+        name: (identifier_upper )))
+    fields: (enum_field 
+      name: (identifier_upper )
+      types: (type_list 
+        (simple_type 
+          name: (identifier_upper ))))
+    fields: (enum_field 
+      name: (identifier_upper )))
+  (newline )
+  (effect_declaration 
+    name: (identifier_upper )
+    type_parameters: (type_parameters 
+      (type_parameter 
+        name: (identifier_upper )))
+    fields: (effect_field 
+      name: (identifier_lower )
+      parameters: (type_list 
+        (simple_type 
+          name: (identifier_upper )))
+      return_type: (simple_type 
+        name: (identifier_upper ))))
+  (newline )
+  (effect_declaration 
+    name: (identifier_upper )
+    type_parameters: (type_parameters 
+      (type_parameter 
+        name: (identifier_upper ))
+      (type_parameter 
+        name: (identifier_upper )))
+    fields: (effect_field 
+      name: (identifier_lower )
+      parameters: (type_list 
+        (simple_type 
+          name: (identifier_upper )))
+      return_type: (generic_type 
+        name: (identifier_upper )
+        parameters: (type_list 
+          (simple_type 
+            name: (identifier_upper )))))
+    fields: (effect_field 
+      name: (identifier_lower )
+      parameters: (type_list 
+        (simple_type 
+          name: (identifier_upper ))
+        (simple_type 
+          name: (identifier_upper )))
+      return_type: (simple_type 
+        name: (identifier_upper ))))
+  (newline )
+  (function_declaration 
+    name: (identifier_lower )
+    type_parameters: (type_parameters 
+      (type_parameter 
+        name: (identifier_upper ))
+      (type_parameter 
+        name: (identifier_upper ))
+      (type_parameter 
+        name: (identifier_upper )))
+    parameters: (function_parameters 
+      (function_parameter 
+        name: (identifier_lower )
+        type: (generic_type 
+          name: (identifier_upper )
+          parameters: (type_list 
+            (simple_type 
+              name: (identifier_upper ))
+            (simple_type 
+              name: (identifier_upper ))))))
+    return_type: (type_annotation 
+      (handle_type 
+        from: (parenthesized_type 
+          (effect_type 
+            effects: (effect_list 
+              (effect 
+                name: (identifier_upper )
+                parameters: (type_list 
+                  (simple_type 
+                    name: (identifier_upper ))
+                  (simple_type 
+                    name: (identifier_upper )))))
+            return_type: (simple_type 
+              name: (identifier_upper ))))
+        to: (simple_type 
+          name: (identifier_upper ))))
+    body: (statement_block 
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (handler_expression 
+              cases: (handler_case 
+                name: (identifier_lower )
+                arguments: (expression_list 
+                  (expression 
+                    (variable 
+                      name: (identifier_lower ))))
+                body: (expression 
+                  (handle_expression 
+                    expression: (expression 
+                      (statement_block 
+                        statements: (statement 
+                          (expression_statement 
+                            (expression 
+                              (function_call 
+                                function: (identifier_lower )
+                                arguments: (expression_list 
+                                  (expression 
+                                    (method_call 
+                                      module: (identifier_upper )
+                                      method: (identifier_lower )
+                                      arguments: (expression_list 
+                                        (expression 
+                                          (variable 
+                                            name: (identifier_lower )))
+                                        (expression 
+                                          (variable 
+                                            name: (identifier_lower )))))))))))))
+                    handler: (expression 
+                      (function_call 
+                        function: (identifier_lower )
+                        arguments: (expression_list 
+                          (expression 
+                            (variable 
+                              name: (identifier_lower )))))))))
+              cases: (handler_case 
+                name: (identifier_lower )
+                arguments: (expression_list 
+                  (expression 
+                    (variable 
+                      name: (identifier_lower )))
+                  (expression 
+                    (variable 
+                      name: (identifier_lower ))))
+                body: (expression 
+                  (statement_block 
+                    statements: (statement 
+                      (let_statement 
+                        name: (identifier_lower )
+                        value: (expression 
+                          (method_call 
+                            module: (identifier_upper )
+                            method: (identifier_lower )
+                            arguments: (expression_list 
+                              (expression 
+                                (variable 
+                                  name: (identifier_lower )))
+                              (expression 
+                                (variable 
+                                  name: (identifier_lower )))
+                              (expression 
+                                (variable 
+                                  name: (identifier_lower ))))))))
+                    statements: (statement 
+                      (expression_statement 
+                        (expression 
+                          (handle_expression 
+                            expression: (expression 
+                              (statement_block 
+                                statements: (statement 
+                                  (expression_statement 
+                                    (expression 
+                                      (variable 
+                                        name: (identifier_lower )))))
+                                statements: (statement 
+                                  (expression_statement 
+                                    (expression 
+                                      (literal 
+                                        (unit )))))))
+                            handler: (expression 
+                              (function_call 
+                                function: (identifier_lower )
+                                arguments: (expression_list 
+                                  (expression 
+                                    (variable 
+                                      name: (identifier_lower )))))))))))))))))))
+  (newline )
+  (function_declaration 
+    name: (identifier_lower )
+    type_parameters: (type_parameters 
+      (type_parameter 
+        name: (identifier_upper ))
+      (type_parameter 
+        name: (identifier_upper ))
+      (type_parameter 
+        name: (identifier_upper ))
+      (type_parameter 
+        name: (identifier_upper )))
+    parameters: (function_parameters 
+      (function_parameter 
+        name: (identifier_lower )
+        type: (function_type 
+          parameter: (parenthesized_type 
+            (simple_type 
+              name: (identifier_upper )))
+          return_type: (effect_type 
+            effects: (effect_list 
+              (effect 
+                name: (identifier_upper )
+                parameters: (type_list 
+                  (simple_type 
+                    name: (identifier_upper ))
+                  (simple_type 
+                    name: (identifier_upper ))))
+              (effect 
+                name: (identifier_upper )))
+            return_type: (simple_type 
+              name: (identifier_upper ))))))
+    return_type: (type_annotation 
+      (effect_type 
+        effects: (effect_list 
+          (effect 
+            name: (identifier_upper )))
+        return_type: (simple_type 
+          name: (identifier_upper ))))
+    body: (statement_block 
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (handle_expression 
+              expression: (expression 
+                (statement_block 
+                  statements: (statement 
+                    (expression_statement 
+                      (expression 
+                        (variable 
+                          name: (identifier_lower )))))
+                  statements: (statement 
+                    (expression_statement 
+                      (expression 
+                        (literal 
+                          (unit )))))))
+              handler: (expression 
+                (function_call 
+                  function: (identifier_lower )
+                  arguments: (expression_list 
+                    (expression 
+                      (method_call 
+                        module: (identifier_upper )
+                        method: (identifier_lower ))))))))))))
+  (newline )
+  (function_declaration 
+    name: (identifier_lower )
+    return_type: (type_annotation 
+      (effect_type 
+        effects: (effect_list 
+          (effect 
+            name: (identifier_upper )
+            parameters: (type_list 
+              (simple_type 
+                name: (identifier_upper ))
+              (simple_type 
+                name: (identifier_upper )))))
+        return_type: (simple_type 
+          name: (identifier_upper ))))
+    body: (statement_block 
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (method_call 
+              module: (identifier_upper )
+              method: (identifier_lower )
+              arguments: (expression_list 
+                (expression 
+                  (literal 
+                    (number )))
+                (expression 
+                  (literal 
+                    (number ))))))))
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (method_call 
+              module: (identifier_upper )
+              method: (identifier_lower )
+              arguments: (expression_list 
+                (expression 
+                  (literal 
+                    (number )))
+                (expression 
+                  (literal 
+                    (number ))))))))
+      statements: (statement 
+        (let_statement 
+          name: (identifier_lower )
+          value: (expression 
+            (method_call 
+              module: (identifier_upper )
+              method: (identifier_lower )
+              arguments: (expression_list 
+                (expression 
+                  (literal 
+                    (number ))))))))
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (binary_expression 
+              left: (expression 
+                (method_call 
+                  module: (identifier_upper )
+                  method: (identifier_lower )
+                  arguments: (expression_list 
+                    (expression 
+                      (method_call 
+                        module: (identifier_upper )
+                        method: (identifier_lower )
+                        arguments: (expression_list 
+                          (expression 
+                            (variable 
+                              name: (identifier_lower )))))))))
+              right: (expression 
+                (method_call 
+                  module: (identifier_upper )
+                  method: (identifier_lower )
+                  arguments: (expression_list 
+                    (expression 
+                      (literal 
+                        (string ))))))))))))
+  (newline )
+  (function_declaration 
+    name: (identifier_lower )
+    return_type: (type_annotation 
+      (effect_type 
+        effects: (effect_list 
+          (effect 
+            name: (identifier_upper )))
+        return_type: (simple_type 
+          name: (identifier_upper ))))
+    body: (statement_block 
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (binary_expression 
+              left: (expression 
+                (function_call 
+                  function: (identifier_lower )
+                  arguments: (expression_list 
+                    (expression 
+                      (variable 
+                        name: (identifier_lower ))))))
+              right: (expression 
+                (variable 
+                  module: (identifier_upper )
+                  name: (identifier_lower )))))))))
+  (newline )
+  (function_declaration 
+    name: (identifier_lower )
+    parameters: (function_parameters 
+      (function_parameter 
+        name: (identifier_lower )
+        type: (simple_type 
+          name: (identifier_upper )))
+      (function_parameter 
+        name: (identifier_lower )
+        type: (simple_type 
+          name: (identifier_upper ))))
+    return_type: (type_annotation 
+      (simple_type 
+        name: (identifier_upper )))
+    body: (statement_block 
+      statements: (statement 
+        (let_statement 
+          name: (identifier_lower )
+          value: (expression 
+            (variable 
+              name: (identifier_lower )))))
+      statements: (statement 
+        (let_statement 
+          name: (identifier_lower )
+          value: (expression 
+            (literal 
+              (number )))))
+      statements: (statement 
+        (let_statement 
+          name: (identifier_lower )
+          value: (expression 
+            (variable 
+              name: (identifier_lower )))))
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (while_expression 
+              condition: (expression 
+                (binary_expression 
+                  left: (expression 
+                    (variable 
+                      name: (identifier_lower )))
+                  right: (expression 
+                    (variable 
+                      name: (identifier_lower )))))
+              body: (statement_block 
+                statements: (statement 
+                  (equal_statement 
+                    name: (identifier_lower )
+                    value: (expression 
+                      (binary_expression 
+                        left: (expression 
+                          (variable 
+                            name: (identifier_lower )))
+                        right: (expression 
+                          (variable 
+                            name: (identifier_lower )))))))
+                statements: (statement 
+                  (expression_statement 
+                    (expression 
+                      (if_expression 
+                        condition: (expression 
+                          (variable 
+                            name: (identifier_lower )))
+                        then: (statement_block 
+                          statements: (statement 
+                            (break_statement ))))))))))))
+      statements: (statement 
+        (expression_statement 
+          (expression 
+            (if_expression 
+              condition: (expression 
+                (variable 
+                  name: (identifier_lower )))
+              then: (statement_block 
+                statements: (statement 
+                  (return_statement )))))))
+      statements: (statement 
+        (return_statement 
+          value: (expression 
+            (variable 
+              name: (identifier_lower )))))))
+  (newline ))
